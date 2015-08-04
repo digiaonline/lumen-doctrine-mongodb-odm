@@ -19,6 +19,7 @@
 
 namespace Nord\Lumen\Doctrine\ODM\MongoDB\Tools;
 
+use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\CacheProvider;
@@ -62,21 +63,17 @@ class Setup
      * @param boolean $isDevMode
      * @param string $proxyDir
      * @param Cache $cache
-     * @param bool $useSimpleAnnotationReader
-     *
      * @return Configuration
+     *
      */
     public static function createAnnotationMetadataConfiguration(
         array $paths,
         $isDevMode = false,
         $proxyDir = null,
-        Cache $cache = null,
-        $useSimpleAnnotationReader = true
+        Cache $cache = null
     ) {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
-
-        $impl = $config->newDefaultAnnotationDriver($paths, $useSimpleAnnotationReader);
-        $config->setMetadataDriverImpl($impl);
+        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver($paths));
 
         return $config;
     }

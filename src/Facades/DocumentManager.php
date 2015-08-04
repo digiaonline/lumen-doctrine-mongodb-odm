@@ -10,6 +10,6 @@ class DocumentManager extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'Doctrine\ODM\MongoDB\DocumentManager';
+        return 'Nord\Lumen\Doctrine\ODM\MongoDB\DocumentManagerInterface';
     }
 }

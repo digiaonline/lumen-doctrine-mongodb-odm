@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Nord\\Lumen\\Doctrine\\MongoDB\\": "src"
+            "Nord\\Lumen\\Doctrine\\ODM\\MongoDB\\": "src"
         }
     },
     "require-dev": {
