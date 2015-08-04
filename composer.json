@@ -1,5 +1,5 @@
 {
-    "name": "nordsoftware/lumen-doctrine-MongoDB-odm",
+    "name": "nordsoftware/lumen-doctrine-mongodb-odm",
     "description": "Doctrine MongoDB ODM module for the Lumen PHP framework.",
     "license": "MIT",
     "authors": [
@@ -19,6 +19,6 @@
         }
     },
     "require-dev": {
-        "laravel/lumen-framework": "~5.2@dev"
+        "laravel/lumen-framework": "~5.1@dev"
     }
 }
