@@ -1,9 +1,10 @@
 <?php namespace Nord\Lumen\Doctrine\ODM\MongoDB\Console;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\AbstractCommand;
 use Illuminate\Console\Command;
 
-abstract class DoctrineCommand extends Command
+abstract class DoctrineCommand extends AbstractCommand
 {
 
     /**
@@ -29,6 +30,13 @@ abstract class DoctrineCommand extends Command
      * @return DocumentManager
      */
     protected function getDocumentManager()
+    {
+        return $this->documentManager;
+    }
+    /**
+     * @return DocumentManager
+     */
+    protected function getSchemaManager()
     {
         return $this->documentManager;
     }

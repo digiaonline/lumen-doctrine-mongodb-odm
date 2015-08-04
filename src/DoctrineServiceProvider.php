@@ -41,12 +41,13 @@ class DoctrineServiceProvider extends ServiceProvider
      */
     protected function registerContainerBindings(Container $container, ConfigRepository $config)
     {
+
         $container->singleton('Doctrine\ODM\MongoDB\DocumentManager', function () use ($config) {
             return $this->createDocumentManager($config);
         });
 
-        return $this->createDocumentManager($config);
-//        $container->alias('Doctrine\ODM\MongoDB\DocumentManager', 'Doctrine\ODM\MongoDB\DocumentManager');
+        $container->alias('Doctrine\ODM\MongoDB\DocumentManager', 'Doctrine\ODM\MongoDB\DocumentManagerInterface');
+        $container->make('Doctrine\ODM\MongoDB\DocumentManagerInterface');
     }
 
 
@@ -64,19 +65,18 @@ class DoctrineServiceProvider extends ServiceProvider
      */
     protected function registerCommands()
     {
-//        $helperSet = new HelperSet(array(
-//            'dm' => new DocumentManagerHelper($dm),
-//        ));
         $this->commands([
-            'Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateDocumentsCommand',
-            'Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateHydratorsCommand',
-            'Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateProxiesCommand',
-            'Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateRepositoriesCommand',
-            'Doctrine\ODM\MongoDB\Tools\Console\Command\QueryCommand',
-            'Doctrine\ODM\MongoDB\Tools\Console\Command\ClearCache\MetadataCommand',
-            'Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\CreateCommand',
-            'Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\DropCommand',
-            'Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\UpdateCommand',
+//            'Nord\Lumen\Doctrine\ODM\MongoDB\Console\Schema\UpdateCommand',
+            'Nord\Lumen\Doctrine\ODM\MongoDB\Console\Schema\UpdateCommand',
+//            'Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateDocumentsCommand',
+//            'Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateHydratorsCommand',
+//            'Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateProxiesCommand',
+//            'Doctrine\ODM\MongoDB\Tools\Console\Command\GenerateRepositoriesCommand',
+//            'Doctrine\ODM\MongoDB\Tools\Console\Command\QueryCommand',
+//            'Doctrine\ODM\MongoDB\Tools\Console\Command\ClearCache\MetadataCommand',
+//            'Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\CreateCommand',
+//            'Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\DropCommand',
+//            'Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\UpdateCommand',
         ]);
     }
 
@@ -92,7 +92,7 @@ class DoctrineServiceProvider extends ServiceProvider
      */
     protected function createDocumentManager(ConfigRepository $config)
     {
-        if (!isset($config['odm'])) {
+        if (!isset($config['doctrine-odm'])) {
             throw new Exception('Doctrine ODM configuration not registered.');
         }
 
@@ -100,7 +100,7 @@ class DoctrineServiceProvider extends ServiceProvider
             throw new Exception('Database configuration not registered.');
         }
 
-        $doctrineConfig = $config['odm'];
+        $doctrineConfig = $config['doctrine-odm'];
         $databaseConfig = $config['mongodb'];
 
         $connectionConfig = $this->createConnectionConfig($doctrineConfig, $databaseConfig);
@@ -120,20 +120,12 @@ class DoctrineServiceProvider extends ServiceProvider
 
         $this->configureEventManager($doctrineConfig, $eventManager);
         $connection = new Connection();
+
         $documentManager = DocumentManager::create($connection, $metadataConfiguration, $eventManager);
-//        $documentManager = DocumentManager::create($connection, $connectionConfig, $metadataConfiguration, $eventManager);
 
         $this->configureDocumentManager($doctrineConfig, $documentManager);
 
         return $documentManager;
-    }
-
-    /**
-     * @param $config
-     */
-    protected function createConfigurationObject($config)
-    {
-
     }
 
     /**
