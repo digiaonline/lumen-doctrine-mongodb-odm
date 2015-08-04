@@ -17,7 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
+namespace Nord\Lumen\Doctrine\ODM\MongoDB\Console\Command\Schema;
 
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,45 +27,38 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @author Bulat Shakirzyanov <mallluhuct@gmail.com>
  */
-class CreateCommand extends AbstractCommand
+class DropCommand extends AbstractCommand
 {
-    private $createOrder = array(self::DB, self::COLLECTION, self::INDEX);
-
-    private $timeout;
+    private $dropOrder = array(self::INDEX, self::COLLECTION, self::DB);
 
     protected function configure()
     {
         $this
-            ->setName('odm:schema:create')
+            ->setName('odm:schema:drop')
             ->addOption('class', 'c', InputOption::VALUE_REQUIRED, 'Document class to process (default: all classes)')
-            ->addOption('timeout', 't', InputOption::VALUE_OPTIONAL, 'Timeout (ms) for acknowledged index creation')
-            ->addOption(self::DB, null, InputOption::VALUE_NONE, 'Create databases')
-            ->addOption(self::COLLECTION, null, InputOption::VALUE_NONE, 'Create collections')
-            ->addOption(self::INDEX, null, InputOption::VALUE_NONE, 'Create indexes')
-            ->setDescription('Create databases, collections and indexes for your documents')
+            ->addOption(self::DB, null, InputOption::VALUE_NONE, 'Drop databases')
+            ->addOption(self::COLLECTION, null, InputOption::VALUE_NONE, 'Drop collections')
+            ->addOption(self::INDEX, null, InputOption::VALUE_NONE, 'Drop indexes')
+            ->setDescription('Drop databases, collections and indexes for your documents')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        foreach ($this->createOrder as $option) {
+        foreach ($this->dropOrder as $option) {
             if ($input->getOption($option)) {
-                $create[] = $option;
+                $drop[] = $option;
             }
         }
 
-        // Default to the full creation order if no options were specified
-        $create = empty($create) ? $this->createOrder : $create;
+        // Default to the full drop order if no options were specified
+        $drop = empty($drop) ? $this->dropOrder : $drop;
 
         $class = $input->getOption('class');
-
-        $timeout = $input->getOption('timeout');
-        $this->timeout = isset($timeout) ? (int) $timeout : null;
-
         $sm = $this->getSchemaManager();
         $isErrored = false;
 
-        foreach ($create as $option) {
+        foreach ($drop as $option) {
             try {
                 if (isset($class)) {
                     $this->{'processDocument' . ucfirst($option)}($sm, $class);
@@ -73,7 +66,7 @@ class CreateCommand extends AbstractCommand
                     $this->{'process' . ucfirst($option)}($sm);
                 }
                 $output->writeln(sprintf(
-                    'Created <comment>%s%s</comment> for <info>%s</info>',
+                    'Dropped <comment>%s%s</comment> for <info>%s</info>',
                     $option,
                     (isset($class) ? (self::INDEX === $option ? '(es)' : '') : (self::INDEX === $option ? 'es' : 's')),
                     (isset($class) ? $class : 'all classes')
@@ -89,41 +82,31 @@ class CreateCommand extends AbstractCommand
 
     protected function processDocumentCollection(SchemaManager $sm, $document)
     {
-        $sm->createDocumentCollection($document);
+        $sm->dropDocumentCollection($document);
     }
 
     protected function processCollection(SchemaManager $sm)
     {
-        $sm->createCollections();
+        $sm->dropCollections();
     }
 
     protected function processDocumentDb(SchemaManager $sm, $document)
     {
-        $sm->createDocumentDatabase($document);
+        $sm->dropDocumentDatabase($document);
     }
 
     protected function processDb(SchemaManager $sm)
     {
-        $sm->createDatabases();
+        $sm->dropDatabases();
     }
 
     protected function processDocumentIndex(SchemaManager $sm, $document)
     {
-        $sm->ensureDocumentIndexes($document, $this->timeout);
+        $sm->deleteDocumentIndexes($document);
     }
 
     protected function processIndex(SchemaManager $sm)
     {
-        $sm->ensureIndexes($this->timeout);
-    }
-
-    protected function processDocumentProxy(SchemaManager $sm, $document)
-    {
-        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses(array($this->getMetadataFactory()->getMetadataFor($document)));
-    }
-
-    protected function processProxy(SchemaManager $sm)
-    {
-        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses($this->getMetadataFactory()->getAllMetadata());
+        $sm->deleteIndexes();
     }
 }

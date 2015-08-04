@@ -17,8 +17,9 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
+namespace Nord\Lumen\Doctrine\ODM\MongoDB\Console\Command\Schema;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Symfony\Component\Console\Command\Command;
 
@@ -30,6 +31,11 @@ abstract class AbstractCommand extends Command
     const DB = 'db';
     const COLLECTION = 'collection';
     const INDEX = 'index';
+
+    /**
+     * @var DocumentManager
+     */
+    private $documentManager;
 
     abstract protected function processDocumentCollection(SchemaManager $sm, $document);
 
@@ -44,6 +50,18 @@ abstract class AbstractCommand extends Command
     abstract protected function processIndex(SchemaManager $sm);
 
     /**
+     * DoctrineCommand constructor.
+     *
+     * @param DocumentManager $documentManager
+     */
+    public function __construct(DocumentManager $documentManager)
+    {
+        parent::__construct();
+
+        $this->documentManager = $documentManager;
+    }
+
+    /**
      * @return SchemaManager
      */
     protected function getSchemaManager()
@@ -56,7 +74,7 @@ abstract class AbstractCommand extends Command
      */
     protected function getDocumentManager()
     {
-        return $this->getHelper('documentManager')->getDocumentManager();
+        return $this->documentManager;
     }
 
     /**
