@@ -15,10 +15,12 @@ class DoctrineServiceProvider extends ServiceProvider
 {
 
     const METADATA_ANNOTATIONS = 'annotations';
-    const METADATA_XML = 'xml';
-    const METADATA_YAML = 'yaml';
-    const HYDRATOR_NAMESPACE = 'Hydrators';
+    const METADATA_XML         = 'xml';
+    const METADATA_YAML        = 'yaml';
+    const HYDRATOR_NAMESPACE   = 'Hydrators';
+
     private $documentManager = null;
+
 
     /**
      * @inheritdoc
@@ -34,19 +36,16 @@ class DoctrineServiceProvider extends ServiceProvider
     /**
      * Registers container bindings.
      *
-     * @param Container $container
+     * @param Container        $container
      * @param ConfigRepository $config
+     *
      * @return DocumentManager
      */
     protected function registerContainerBindings(Container $container, ConfigRepository $config)
     {
-
         $container->singleton('Doctrine\ODM\MongoDB\DocumentManager', function () use ($config) {
             return $this->createDocumentManager($config);
         });
-
-        $container->alias('Doctrine\ODM\MongoDB\DocumentManager', 'Doctrine\ODM\MongoDB\DocumentManagerInterface');
-        $container->make('Doctrine\ODM\MongoDB\DocumentManagerInterface');
     }
 
 
@@ -55,7 +54,7 @@ class DoctrineServiceProvider extends ServiceProvider
      */
     protected function registerFacades()
     {
-        class_alias('Nord\Lumen\Doctrine\ODM\MongoDB\Facades\DocumentManager', 'DocumentManager');
+        //class_alias('Nord\Lumen\Doctrine\ODM\MongoDB\Facades\DocumentManager', 'DocumentManager');
     }
 
 
@@ -102,10 +101,10 @@ class DoctrineServiceProvider extends ServiceProvider
 
         $connectionConfig = $this->createConnectionConfig($doctrineConfig, $databaseConfig);
 
-        $type = array_get($doctrineConfig, 'mapping', self::METADATA_ANNOTATIONS);
-        $paths = array_get($doctrineConfig, 'paths', [base_path('app/Entities')]);
-        $debug = $config['app.debug'];
-        $proxyDir = array_get($doctrineConfig, 'proxy.directory');
+        $type              = array_get($doctrineConfig, 'mapping', self::METADATA_ANNOTATIONS);
+        $paths             = array_get($doctrineConfig, 'paths', [base_path('app/Entities')]); // what??
+        $debug             = $config['app.debug'];
+        $proxyDir          = array_get($doctrineConfig, 'proxy.directory');
         $simpleAnnotations = array_get($doctrineConfig, 'simple_annotations', false);
 
         $metadataConfiguration = $this->createMetadataConfiguration($type, $paths, $debug, $proxyDir, null,
@@ -126,6 +125,7 @@ class DoctrineServiceProvider extends ServiceProvider
         return $documentManager;
     }
 
+
     /**
      * Creates the Doctrine connection configuration.
      *
@@ -137,7 +137,7 @@ class DoctrineServiceProvider extends ServiceProvider
      */
     protected function createConnectionConfig(array $doctrineConfig, array $databaseConfig)
     {
-        $connectionName = array_get($doctrineConfig, 'connection', $databaseConfig['default']);
+        $connectionName   = array_get($doctrineConfig, 'connection', $databaseConfig['default']);
         $connectionConfig = array_get($databaseConfig['connections'], $connectionName);
 
         if ($connectionConfig === null) {
@@ -159,7 +159,7 @@ class DoctrineServiceProvider extends ServiceProvider
     protected function normalizeConnectionConfig(array $config)
     {
         $driverMap = [
-            'mongodb' => 'phpmongo'
+            'mongodb' => 'phpmongo',
         ];
 
         if (!isset($driverMap[$config['driver']])) {
@@ -167,13 +167,13 @@ class DoctrineServiceProvider extends ServiceProvider
         }
 
         return [
-            'driver' => $driverMap[$config['driver']],
-            'host' => $config['host'],
-            'dbname' => $config['database'],
-            'user' => $config['username'],
+            'driver'   => $driverMap[$config['driver']],
+            'host'     => $config['host'],
+            'dbname'   => $config['database'],
+            'user'     => $config['username'],
             'password' => $config['password'],
-            'charset' => $config['charset'],
-            'prefix' => array_get($config, 'prefix'),
+            'charset'  => $config['charset'],
+            'prefix'   => array_get($config, 'prefix'),
         ];
     }
 
@@ -182,11 +182,11 @@ class DoctrineServiceProvider extends ServiceProvider
      * Creates the metadata configuration instance.
      *
      * @param string $type
-     * @param array $paths
-     * @param bool $isDevMode
+     * @param array  $paths
+     * @param bool   $isDevMode
      * @param string $proxyDir
-     * @param Cache $cache
-     * @param bool $useSimpleAnnotationReader
+     * @param Cache  $cache
+     * @param bool   $useSimpleAnnotationReader
      *
      * @return Configuration
      * @throws \Exception
@@ -218,12 +218,15 @@ class DoctrineServiceProvider extends ServiceProvider
      * Configures the metadata configuration instance.
      *
      * @param Configuration $configuration
-     * @param array $doctrineConfig
+     * @param array         $doctrineConfig
      *
      * @throws Exception
      */
-    protected function configureMetadataConfiguration(Configuration $configuration, array $doctrineConfig, array $databaseConfig)
-    {
+    protected function configureMetadataConfiguration(
+        Configuration $configuration,
+        array $doctrineConfig,
+        array $databaseConfig
+    ) {
         if (isset($doctrineConfig['filters'])) {
             foreach ($doctrineConfig['filters'] as $name => $filter) {
                 $configuration->addFilter($name, $filter['class']);
@@ -257,15 +260,13 @@ class DoctrineServiceProvider extends ServiceProvider
         $configuration->setDefaultDB($databaseConfig['connections']['mongodb']['database']);
 //        $configuration->setDefaultRepositoryClassName('gamerefinery');
 
-
-
     }
 
 
     /**
      * Configures the Doctrine event manager instance.
      *
-     * @param array $doctrineConfig
+     * @param array        $doctrineConfig
      * @param EventManager $eventManager
      */
     protected function configureEventManager(array $doctrineConfig, EventManager $eventManager)
@@ -281,7 +282,7 @@ class DoctrineServiceProvider extends ServiceProvider
     /**
      * Configures the Doctrine entity manager instance.
      *
-     * @param array $doctrineConfig
+     * @param array           $doctrineConfig
      * @param DocumentManager $documentManager
      */
     protected function configureDocumentManager(array $doctrineConfig, DocumentManager $documentManager)
