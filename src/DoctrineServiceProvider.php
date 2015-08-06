@@ -5,6 +5,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Types\Type;
 use Exception;
 use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Container\Container;
@@ -28,7 +29,6 @@ class DoctrineServiceProvider extends ServiceProvider
     public function register()
     {
         $this->registerContainerBindings($this->app, $this->app['config']);
-        $this->registerFacades();
         $this->registerCommands();
     }
 
@@ -46,15 +46,6 @@ class DoctrineServiceProvider extends ServiceProvider
         $container->singleton('Doctrine\ODM\MongoDB\DocumentManager', function () use ($config) {
             return $this->createDocumentManager($config);
         });
-    }
-
-
-    /**
-     * Registers facades.
-     */
-    protected function registerFacades()
-    {
-        //class_alias('Nord\Lumen\Doctrine\ODM\MongoDB\Facades\DocumentManager', 'DocumentManager');
     }
 
 
@@ -101,8 +92,9 @@ class DoctrineServiceProvider extends ServiceProvider
 
         $connectionConfig = $this->createConnectionConfig($doctrineConfig, $databaseConfig);
 
-        $type              = array_get($doctrineConfig, 'mapping', self::METADATA_ANNOTATIONS);
-        $paths             = array_get($doctrineConfig, 'paths', [base_path('app/Entities')]); // what??
+        $type = array_get($doctrineConfig, 'mapping', self::METADATA_ANNOTATIONS);
+        // if no paths are set set default ones
+        $paths             = array_get($doctrineConfig, 'paths', [base_path('app/Entities')]);
         $debug             = $config['app.debug'];
         $proxyDir          = array_get($doctrineConfig, 'proxy.directory');
         $simpleAnnotations = array_get($doctrineConfig, 'simple_annotations', false);
@@ -158,22 +150,11 @@ class DoctrineServiceProvider extends ServiceProvider
      */
     protected function normalizeConnectionConfig(array $config)
     {
-        $driverMap = [
-            'mongodb' => 'phpmongo',
-        ];
-
-        if (!isset($driverMap[$config['driver']])) {
-            throw new Exception("Driver '{$config['driver']}' is not supported.");
-        }
-
         return [
-            'driver'   => $driverMap[$config['driver']],
             'host'     => $config['host'],
             'dbname'   => $config['database'],
             'user'     => $config['username'],
             'password' => $config['password'],
-            'charset'  => $config['charset'],
-            'prefix'   => array_get($config, 'prefix'),
         ];
     }
 
@@ -201,7 +182,6 @@ class DoctrineServiceProvider extends ServiceProvider
     ) {
         switch ($type) {
             case self::METADATA_ANNOTATIONS:
-
                 return Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache,
                     $useSimpleAnnotationReader);
             case self::METADATA_XML:
@@ -219,6 +199,7 @@ class DoctrineServiceProvider extends ServiceProvider
      *
      * @param Configuration $configuration
      * @param array         $doctrineConfig
+     * @param array         $databaseConfig
      *
      * @throws Exception
      */
@@ -244,7 +225,7 @@ class DoctrineServiceProvider extends ServiceProvider
             }
         }
 
-        if (isset($doctrineConfig['repository'])) {
+        if (!empty($doctrineConfig['repository'])) {
             $configuration->setDefaultRepositoryClassName($doctrineConfig['repository']);
         }
 
@@ -253,12 +234,13 @@ class DoctrineServiceProvider extends ServiceProvider
                 $configuration->setHydratorDir($doctrineConfig['hydrator']['directory']);
             }
             if (isset($doctrineConfig['hydrator']['namespace'])) {
-                $configuration->setHydratorNamespace($doctrineConfig['hydrator']['namespace'] ? $doctrineConfig['hydrator']['namespace'] : self::HYDRATOR_NAMESPACE);
+                $hydratorNamespace = $doctrineConfig['hydrator']['namespace'] ? $doctrineConfig['hydrator']['namespace'] : self::HYDRATOR_NAMESPACE;
+                $configuration->setHydratorNamespace($hydratorNamespace);
             }
         }
-
-        $configuration->setDefaultDB($databaseConfig['connections']['mongodb']['database']);
-//        $configuration->setDefaultRepositoryClassName('gamerefinery');
+        if (!empty($databaseConfig['connections'][$databaseConfig['default']]['database'])) {
+            $configuration->setDefaultDB($databaseConfig['connections'][$databaseConfig['default']]['database']);
+        }
 
     }
 
@@ -292,21 +274,14 @@ class DoctrineServiceProvider extends ServiceProvider
                 if (!array_get($filter, 'enabled', false)) {
                     continue;
                 }
-
                 $documentManager->getFilterCollection()->enable($name);
             }
         }
-
-//        if (isset($doctrineConfig['types'])) {
-//            $connection = $documentManager->getConnection();
-//            if ($databasePlatform = $connection->getDatabasePlatform()) {
-//
-//            }
-//
-//            foreach ($doctrineConfig['types'] as $name => $className) {
-//                Type::addType($name, $className);
-//                $databasePlatform->registerDoctrineTypeMapping('db_' . $name, $name);
-//            }
-//        }
+        // @see http://doctrine-mongodb-odm.readthedocs.org/en/latest/reference/basic-mapping.html#custom-mapping-types
+        if (isset($doctrineConfig['types'])) {
+            foreach ($doctrineConfig['types'] as $name => $className) {
+                Type::addType($name, $className);
+            }
+        }
     }
 }
