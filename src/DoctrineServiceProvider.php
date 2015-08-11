@@ -19,6 +19,7 @@ class DoctrineServiceProvider extends ServiceProvider
     const METADATA_XML         = 'xml';
     const METADATA_YAML        = 'yaml';
     const HYDRATOR_NAMESPACE   = 'Hydrators';
+    const DEFAULT_MONGODB_PORT = 27017;
 
     private $documentManager = null;
 
@@ -152,6 +153,7 @@ class DoctrineServiceProvider extends ServiceProvider
     {
         return [
             'host'     => $config['host'],
+            'port'   => !empty($config['port']) ? $config['port'] : self::DEFAULT_MONGODB_PORT,
             'dbname'   => $config['database'],
             'user'     => $config['username'],
             'password' => $config['password'],
