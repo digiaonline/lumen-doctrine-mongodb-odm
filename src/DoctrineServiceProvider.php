@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
+use Nord\Lumen\Doctrine\ODM\MongoDB\Config\Config;
 use Nord\Lumen\Doctrine\ODM\MongoDB\Tools\Setup;
 
 class DoctrineServiceProvider extends ServiceProvider
@@ -20,6 +21,8 @@ class DoctrineServiceProvider extends ServiceProvider
     const METADATA_YAML        = 'yaml';
     const HYDRATOR_NAMESPACE   = 'Hydrators';
     const DEFAULT_MONGODB_PORT = 27017;
+    const ODM_CONFIG_NAME      = 'doctrine-odm';
+    const ODM_DB_CONFIG_NAME   = 'mongodb';
 
     private $documentManager = null;
 
@@ -45,6 +48,7 @@ class DoctrineServiceProvider extends ServiceProvider
     protected function registerContainerBindings(Container $container, ConfigRepository $config)
     {
         $container->singleton('Doctrine\ODM\MongoDB\DocumentManager', function () use ($config) {
+            Config::mergeWith($config);
             return $this->createDocumentManager($config);
         });
     }
@@ -80,16 +84,16 @@ class DoctrineServiceProvider extends ServiceProvider
      */
     protected function createDocumentManager(ConfigRepository $config)
     {
-        if (!isset($config['doctrine-odm'])) {
+        if (!isset($config[self::ODM_CONFIG_NAME])) {
             throw new Exception('Doctrine ODM configuration not registered.');
         }
 
-        if (!isset($config['mongodb'])) {
+        if (!isset($config[self::ODM_DB_CONFIG_NAME])) {
             throw new Exception('Database configuration not registered.');
         }
 
-        $doctrineConfig = $config['doctrine-odm'];
-        $databaseConfig = $config['mongodb'];
+        $doctrineConfig = $config[self::ODM_CONFIG_NAME];
+        $databaseConfig = $config[self::ODM_DB_CONFIG_NAME];
 
         $connectionConfig = $this->createConnectionConfig($doctrineConfig, $databaseConfig);
 
@@ -153,7 +157,7 @@ class DoctrineServiceProvider extends ServiceProvider
     {
         return [
             'host'     => $config['host'],
-            'port'   => !empty($config['port']) ? $config['port'] : self::DEFAULT_MONGODB_PORT,
+            'port'     => !empty($config['port']) ? $config['port'] : self::DEFAULT_MONGODB_PORT,
             'dbname'   => $config['database'],
             'user'     => $config['username'],
             'password' => $config['password'],
@@ -279,6 +283,7 @@ class DoctrineServiceProvider extends ServiceProvider
                 $documentManager->getFilterCollection()->enable($name);
             }
         }
+
         // @see http://doctrine-mongodb-odm.readthedocs.org/en/latest/reference/basic-mapping.html#custom-mapping-types
         if (isset($doctrineConfig['types'])) {
             foreach ($doctrineConfig['types'] as $name => $className) {
