@@ -21,8 +21,6 @@ class DoctrineServiceProvider extends ServiceProvider
     const METADATA_YAML        = 'yaml';
     const HYDRATOR_NAMESPACE   = 'Hydrators';
     const DEFAULT_MONGODB_PORT = 27017;
-    const ODM_CONFIG_NAME      = 'doctrine-odm';
-    const ODM_DB_CONFIG_NAME   = 'mongodb';
 
     private $documentManager = null;
 
@@ -32,6 +30,7 @@ class DoctrineServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        Config::check($this->app['config']);
         $this->registerContainerBindings($this->app, $this->app['config']);
         $this->registerCommands();
     }
@@ -49,6 +48,7 @@ class DoctrineServiceProvider extends ServiceProvider
     {
         $container->singleton('Doctrine\ODM\MongoDB\DocumentManager', function () use ($config) {
             Config::mergeWith($config);
+
             return $this->createDocumentManager($config);
         });
     }
@@ -84,20 +84,11 @@ class DoctrineServiceProvider extends ServiceProvider
      */
     protected function createDocumentManager(ConfigRepository $config)
     {
-        if (!isset($config[self::ODM_CONFIG_NAME])) {
-            throw new Exception('Doctrine ODM configuration not registered.');
-        }
+        $doctrineConfig = Config::getODM($config);
+        $databaseConfig = Config::getDB($config);
 
-        if (!isset($config[self::ODM_DB_CONFIG_NAME])) {
-            throw new Exception('Database configuration not registered.');
-        }
-
-        $doctrineConfig = $config[self::ODM_CONFIG_NAME];
-        $databaseConfig = $config[self::ODM_DB_CONFIG_NAME];
-
-        $connectionConfig = $this->createConnectionConfig($doctrineConfig, $databaseConfig);
-
-        $type = array_get($doctrineConfig, 'mapping', self::METADATA_ANNOTATIONS);
+        $connectionConfig = Config::createConnectionConfig($doctrineConfig, $databaseConfig);
+        $type             = array_get($doctrineConfig, 'mapping', self::METADATA_ANNOTATIONS);
         // if no paths are set set default ones
         $paths             = array_get($doctrineConfig, 'paths', [base_path('app/Entities')]);
         $debug             = $config['app.debug'];
@@ -121,49 +112,7 @@ class DoctrineServiceProvider extends ServiceProvider
 
         return $documentManager;
     }
-
-
-    /**
-     * Creates the Doctrine connection configuration.
-     *
-     * @param array $doctrineConfig
-     * @param array $databaseConfig
-     *
-     * @return array
-     * @throws Exception
-     */
-    protected function createConnectionConfig(array $doctrineConfig, array $databaseConfig)
-    {
-        $connectionName   = array_get($doctrineConfig, 'connection', $databaseConfig['default']);
-        $connectionConfig = array_get($databaseConfig['connections'], $connectionName);
-
-        if ($connectionConfig === null) {
-            throw new Exception("Configuration for connection '$connectionName' not found.");
-        }
-
-        return $this->normalizeConnectionConfig($connectionConfig);
-    }
-
-
-    /**
-     * Normalizes the connection config to a format Doctrine can use.
-     *
-     * @param array $config
-     *
-     * @return array
-     * @throws \Exception
-     */
-    protected function normalizeConnectionConfig(array $config)
-    {
-        return [
-            'host'     => $config['host'],
-            'port'     => !empty($config['port']) ? $config['port'] : self::DEFAULT_MONGODB_PORT,
-            'dbname'   => $config['database'],
-            'user'     => $config['username'],
-            'password' => $config['password'],
-        ];
-    }
-
+    
 
     /**
      * Creates the metadata configuration instance.
