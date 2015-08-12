@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
+use Nord\Lumen\Doctrine\ODM\MongoDB\Config\Config;
 use Nord\Lumen\Doctrine\ODM\MongoDB\Tools\Setup;
 
 class DoctrineServiceProvider extends ServiceProvider
@@ -29,6 +30,7 @@ class DoctrineServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        Config::check($this->app['config']);
         $this->registerContainerBindings($this->app, $this->app['config']);
         $this->registerCommands();
     }
@@ -45,6 +47,8 @@ class DoctrineServiceProvider extends ServiceProvider
     protected function registerContainerBindings(Container $container, ConfigRepository $config)
     {
         $container->singleton('Doctrine\ODM\MongoDB\DocumentManager', function () use ($config) {
+            Config::mergeWith($config);
+
             return $this->createDocumentManager($config);
         });
     }
@@ -80,20 +84,11 @@ class DoctrineServiceProvider extends ServiceProvider
      */
     protected function createDocumentManager(ConfigRepository $config)
     {
-        if (!isset($config['doctrine-odm'])) {
-            throw new Exception('Doctrine ODM configuration not registered.');
-        }
+        $doctrineConfig = Config::getODM($config);
+        $databaseConfig = Config::getDB($config);
 
-        if (!isset($config['mongodb'])) {
-            throw new Exception('Database configuration not registered.');
-        }
-
-        $doctrineConfig = $config['doctrine-odm'];
-        $databaseConfig = $config['mongodb'];
-
-        $connectionConfig = $this->createConnectionConfig($doctrineConfig, $databaseConfig);
-
-        $type = array_get($doctrineConfig, 'mapping', self::METADATA_ANNOTATIONS);
+        $connectionConfig = Config::createConnectionConfig($doctrineConfig, $databaseConfig);
+        $type             = array_get($doctrineConfig, 'mapping', self::METADATA_ANNOTATIONS);
         // if no paths are set set default ones
         $paths             = array_get($doctrineConfig, 'paths', [base_path('app/Entities')]);
         $debug             = $config['app.debug'];
@@ -117,49 +112,7 @@ class DoctrineServiceProvider extends ServiceProvider
 
         return $documentManager;
     }
-
-
-    /**
-     * Creates the Doctrine connection configuration.
-     *
-     * @param array $doctrineConfig
-     * @param array $databaseConfig
-     *
-     * @return array
-     * @throws Exception
-     */
-    protected function createConnectionConfig(array $doctrineConfig, array $databaseConfig)
-    {
-        $connectionName   = array_get($doctrineConfig, 'connection', $databaseConfig['default']);
-        $connectionConfig = array_get($databaseConfig['connections'], $connectionName);
-
-        if ($connectionConfig === null) {
-            throw new Exception("Configuration for connection '$connectionName' not found.");
-        }
-
-        return $this->normalizeConnectionConfig($connectionConfig);
-    }
-
-
-    /**
-     * Normalizes the connection config to a format Doctrine can use.
-     *
-     * @param array $config
-     *
-     * @return array
-     * @throws \Exception
-     */
-    protected function normalizeConnectionConfig(array $config)
-    {
-        return [
-            'host'     => $config['host'],
-            'port'   => !empty($config['port']) ? $config['port'] : self::DEFAULT_MONGODB_PORT,
-            'dbname'   => $config['database'],
-            'user'     => $config['username'],
-            'password' => $config['password'],
-        ];
-    }
-
+    
 
     /**
      * Creates the metadata configuration instance.
@@ -279,6 +232,7 @@ class DoctrineServiceProvider extends ServiceProvider
                 $documentManager->getFilterCollection()->enable($name);
             }
         }
+
         // @see http://doctrine-mongodb-odm.readthedocs.org/en/latest/reference/basic-mapping.html#custom-mapping-types
         if (isset($doctrineConfig['types'])) {
             foreach ($doctrineConfig['types'] as $name => $className) {

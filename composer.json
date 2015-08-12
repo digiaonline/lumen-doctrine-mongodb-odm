@@ -1,24 +1,25 @@
 {
-    "name": "nordsoftware/lumen-doctrine-mongodb-odm",
-    "description": "Doctrine MongoDB ODM module for the Lumen PHP framework.",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Danijel Maricic",
-            "email": "danijelmaricic@gmail.com"
-        }
-    ],
-    "minimum-stability": "dev",
-    "require": {
-        "doctrine/MongoDB": "~1.2@dev",
-        "doctrine/MongoDB-odm": "~1.0@dev"
-    },
-    "autoload": {
-        "psr-4": {
-            "Nord\\Lumen\\Doctrine\\ODM\\MongoDB\\": "src"
-        }
-    },
-    "require-dev": {
-        "laravel/lumen-framework": "~5.1@dev"
+  "name": "nordsoftware/lumen-doctrine-mongodb-odm",
+  "description": "Doctrine MongoDB ODM module for the Lumen PHP framework.",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Danijel Maricic",
+      "email": "danijelmaricic@gmail.com"
     }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "doctrine/MongoDB": "~1.2@dev",
+    "doctrine/MongoDB-odm": "~1.0@dev",
+    "crisu83/shortid": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "Nord\\Lumen\\Doctrine\\ODM\\MongoDB\\": "src"
+    }
+  },
+  "require-dev": {
+    "laravel/lumen-framework": "~5.1@dev"
+  }
 }

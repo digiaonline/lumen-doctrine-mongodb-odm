@@ -35,6 +35,7 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver;
  */
 class Setup
 {
+
     /**
      * Use this method to register all autoloads for a downloaded Doctrine library.
      * Pick the directory the library was uncompressed into.
@@ -56,13 +57,15 @@ class Setup
         $loader->register();
     }
 
+
     /**
      * Creates a configuration with an annotation metadata driver.
      *
-     * @param array $paths
+     * @param array   $paths
      * @param boolean $isDevMode
-     * @param string $proxyDir
-     * @param Cache $cache
+     * @param string  $proxyDir
+     * @param Cache   $cache
+     *
      * @return Configuration
      *
      */
@@ -78,13 +81,14 @@ class Setup
         return $config;
     }
 
+
     /**
      * Creates a configuration with a xml metadata driver.
      *
-     * @param array $paths
+     * @param array   $paths
      * @param boolean $isDevMode
-     * @param string $proxyDir
-     * @param Cache $cache
+     * @param string  $proxyDir
+     * @param Cache   $cache
      *
      * @return Configuration
      */
@@ -100,13 +104,14 @@ class Setup
         return $config;
     }
 
+
     /**
      * Creates a configuration with a yaml metadata driver.
      *
-     * @param array $paths
+     * @param array   $paths
      * @param boolean $isDevMode
-     * @param string $proxyDir
-     * @param Cache $cache
+     * @param string  $proxyDir
+     * @param Cache   $cache
      *
      * @return Configuration
      */
@@ -122,12 +127,13 @@ class Setup
         return $config;
     }
 
+
     /**
      * Creates a configuration without a metadata driver.
      *
-     * @param bool $isDevMode
+     * @param bool   $isDevMode
      * @param string $proxyDir
-     * @param Cache $cache
+     * @param Cache  $cache
      *
      * @return Configuration
      */
