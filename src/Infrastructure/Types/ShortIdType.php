@@ -23,7 +23,7 @@ final class ShortIdType extends Type
      */
     public function closureToPHP()
     {
-        return '$return = new ShortIdModel($value);';
+        return '$return = new \Nord\Lumen\Doctrine\ODM\MongoDB\Domain\Model\ShortId($value);';
     }
 
 
@@ -39,6 +39,6 @@ final class ShortIdType extends Type
 
     public function closureToMongo()
     {
-        return '$return = new ShortIdModel($value);';
+        return '$return = new \Nord\Lumen\Doctrine\ODM\MongoDB\Domain\Model\ShortId($value);';
     }
 }
