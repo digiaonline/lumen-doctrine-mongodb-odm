@@ -6,8 +6,8 @@ use Symfony\Component\Config\Definition\Exception\Exception;
 class Config
 {
 
-    const ODM_CONFIG_NAME    = 'odm';
-    const ODM_DB_CONFIG_NAME = 'mongodb';
+    const ODM_CONFIG_NAME      = 'odm';
+    const ODM_DB_CONFIG_NAME   = 'mongodb';
     const DEFAULT_MONGODB_PORT = 27017;
 
     /**
@@ -184,12 +184,17 @@ class Config
         $realConfig    = $config->get(self::ODM_CONFIG_NAME);
         foreach ($realConfig as $configKey => $configValue) {
             if (isset($defaultConfig[$configKey])) {
-                $defaultConfig[$configKey] += $configValue;
+                if (is_array($defaultConfig[$configKey])) {
+                    $defaultConfig[$configKey] += $configValue;
+                } else {
+                    $defaultConfig[$configKey] = $configValue;
+                }
             }
         }
         $config->set(self::ODM_CONFIG_NAME, $defaultConfig);
         self::$liveConfig = $config;
     }
+
 
     /**
      * Creates the Doctrine connection configuration.
@@ -202,8 +207,8 @@ class Config
      */
     public static function createConnectionConfig()
     {
-        $doctrineConfig = self::$liveConfig->get(self::ODM_CONFIG_NAME);
-        $databaseConfig = self::$liveConfig->get(self::ODM_DB_CONFIG_NAME);
+        $doctrineConfig   = self::$liveConfig->get(self::ODM_CONFIG_NAME);
+        $databaseConfig   = self::$liveConfig->get(self::ODM_DB_CONFIG_NAME);
         $connectionName   = array_get($doctrineConfig, 'connection', $databaseConfig['default']);
         $connectionConfig = array_get($databaseConfig['connections'], $connectionName);
 
@@ -213,6 +218,7 @@ class Config
 
         return self::normalizeConnectionConfig($connectionConfig);
     }
+
 
     /**
      * Normalizes the connection config to a format Doctrine can use.
@@ -224,8 +230,9 @@ class Config
      */
     public static function normalizeConnectionConfig()
     {
-        $config = self::$liveConfig->get(self::ODM_DB_CONFIG_NAME);
+        $config   = self::$liveConfig->get(self::ODM_DB_CONFIG_NAME);
         $dbConfig = $config['connections'][$config['default']];
+
         return [
             'host'     => $dbConfig['host'],
             'port'     => !empty($dbConfig['port']) ? $dbConfig['port'] : self::DEFAULT_MONGODB_PORT,
