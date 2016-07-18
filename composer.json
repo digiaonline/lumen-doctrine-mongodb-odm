@@ -8,11 +8,10 @@
       "email": "danijelmaricic@gmail.com"
     }
   ],
-  "minimum-stability": "dev",
   "require": {
-    "doctrine/MongoDB": "~1.2@dev",
-    "doctrine/MongoDB-odm": "~1.0@dev",
-    "crisu83/shortid": "dev-master"
+    "doctrine/mongodb": "^1.2",
+    "doctrine/mongodb-odm": "^1.0",
+    "crisu83/shortid": "^1.0"
   },
   "autoload": {
     "psr-4": {
@@ -20,6 +19,6 @@
     }
   },
   "require-dev": {
-    "laravel/lumen-framework": "~5.1@dev"
+    "laravel/lumen-framework": "^5.1"
   }
 }
