@@ -17,6 +17,6 @@ class ShortIdGenerator extends AbstractIdGenerator
      */
     public function generate(DocumentManager $dm, $document)
     {
-    return new ShortId();
+        return new ShortId();
     }
 }
