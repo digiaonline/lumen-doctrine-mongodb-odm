@@ -1,8 +1,15 @@
-<?php namespace Nord\Lumen\Doctrine\ODM\MongoDB\Config;
+<?php
 
+namespace Nord\Lumen\Doctrine\ODM\MongoDB\Config;
+
+use Exception;
 use Illuminate\Config\Repository as ConfigRepository;
-use Symfony\Component\Config\Definition\Exception\Exception;
 
+/**
+ * Class Config.
+ *
+ * @package Nord\Lumen\Doctrine\ODM\MongoDB\Config
+ */
 class Config
 {
 
@@ -12,6 +19,7 @@ class Config
 
     /**
      * Base config
+     *
      * @var array
      */
     private static $baseConfig = [
@@ -23,7 +31,7 @@ class Config
         |
         */
 
-        'mapping'            => 'annotations',
+        'mapping' => 'annotations',
         /*
         |--------------------------------------------------------------------------
         | Entity paths
@@ -31,7 +39,7 @@ class Config
         |
         */
 
-        'paths'              => [],
+        'paths' => [],
         /*
         |--------------------------------------------------------------------------
         | Custom types
@@ -39,7 +47,7 @@ class Config
         |
         */
 
-        'types'              => [
+        'types' => [
             'short_id' => 'Nord\Lumen\Doctrine\ODM\MongoDB\Infrastructure\Types\ShortIdType',
         ],
         /*
@@ -49,7 +57,7 @@ class Config
         |
         */
 
-        'proxy'              => [
+        'proxy' => [
             'auto_generate' => false,
             'namespace'     => 'Proxies',
         ],
@@ -60,7 +68,7 @@ class Config
         |
         */
 
-        'repository'         => null,
+        'repository' => null,
         /*
         |--------------------------------------------------------------------------
         | Logger class
@@ -106,16 +114,13 @@ class Config
      */
     private static $liveConfig;
 
-
     /**
      * Constructor
      */
-
     public function __construct()
     {
         return self::getDefaults();
     }
-
 
     /**
      * Returns config defaults
@@ -126,7 +131,6 @@ class Config
     {
         return self::$baseConfig;
     }
-
 
     /**
      * Returns ODM config values
@@ -140,7 +144,6 @@ class Config
         return $config->get(self::ODM_CONFIG_NAME);
     }
 
-
     /**
      * Returns mongodb database connection parameters
      *
@@ -148,30 +151,28 @@ class Config
      *
      * @return mixed
      */
-
     public static function getDB(ConfigRepository $config)
     {
         return $config->get(self::ODM_DB_CONFIG_NAME);
     }
 
-
     /**
      * Health check for existence of both config files
      *
      * @param ConfigRepository $config
+     *
+     * @throws Exception
      */
-
     public static function check(ConfigRepository $config)
     {
-        if (!isset($config[self::ODM_CONFIG_NAME])) {
+        if ( ! isset($config[self::ODM_CONFIG_NAME])) {
             throw new Exception('Doctrine ODM configuration not registered.');
         }
 
-        if (!isset($config[self::ODM_DB_CONFIG_NAME])) {
+        if ( ! isset($config[self::ODM_DB_CONFIG_NAME])) {
             throw new Exception('Database configuration not registered.');
         }
     }
-
 
     /**
      * Merging defaults and live config
@@ -195,12 +196,8 @@ class Config
         self::$liveConfig = $config;
     }
 
-
     /**
      * Creates the Doctrine connection configuration.
-     *
-     * @param array $doctrineConfig
-     * @param array $databaseConfig
      *
      * @return array
      * @throws Exception
@@ -216,14 +213,11 @@ class Config
             throw new Exception("Configuration for connection '$connectionName' not found.");
         }
 
-        return self::normalizeConnectionConfig($connectionConfig);
+        return self::normalizeConnectionConfig();
     }
-
 
     /**
      * Normalizes the connection config to a format Doctrine can use.
-     *
-     * @param array $config
      *
      * @return array
      * @throws \Exception
@@ -235,7 +229,7 @@ class Config
 
         return [
             'host'     => $dbConfig['host'],
-            'port'     => !empty($dbConfig['port']) ? $dbConfig['port'] : self::DEFAULT_MONGODB_PORT,
+            'port'     => ! empty($dbConfig['port']) ? $dbConfig['port'] : self::DEFAULT_MONGODB_PORT,
             'user'     => $dbConfig['username'],
             'password' => $dbConfig['password'],
         ];
