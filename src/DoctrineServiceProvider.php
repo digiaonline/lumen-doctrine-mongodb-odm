@@ -13,6 +13,11 @@ use Illuminate\Support\ServiceProvider;
 use Nord\Lumen\Doctrine\ODM\MongoDB\Config\Config;
 use Nord\Lumen\Doctrine\ODM\MongoDB\Tools\Setup;
 
+/**
+ * Class DoctrineServiceProvider.
+ *
+ * @package Nord\Lumen\Doctrine\ODM\MongoDB
+ */
 class DoctrineServiceProvider extends ServiceProvider
 {
 
@@ -22,8 +27,10 @@ class DoctrineServiceProvider extends ServiceProvider
     const HYDRATOR_NAMESPACE   = 'Hydrators';
     const DEFAULT_MONGODB_PORT = 27017;
 
+    /**
+     * @var DocumentManager
+     */
     private $documentManager = null;
-
 
     /**
      * @inheritdoc
@@ -34,7 +41,6 @@ class DoctrineServiceProvider extends ServiceProvider
         $this->registerContainerBindings($this->app, $this->app['config']);
         $this->registerCommands();
     }
-
 
     /**
      * Registers container bindings.
@@ -52,7 +58,6 @@ class DoctrineServiceProvider extends ServiceProvider
             return $this->createDocumentManager($config);
         });
     }
-
 
     /**
      * Registers console commands.
@@ -72,7 +77,6 @@ class DoctrineServiceProvider extends ServiceProvider
         ]);
     }
 
-
     /**
      * Creates the Doctrine entity manager instance.
      *
@@ -80,15 +84,14 @@ class DoctrineServiceProvider extends ServiceProvider
      *
      * @return DocumentManager
      * @throws Exception
-     * @throws \Doctrine\ORM\ORMException
      */
     protected function createDocumentManager(ConfigRepository $config)
     {
-        $doctrineConfig = Config::getODM($config);
-        $databaseConfig = Config::getDB($config);
+        $doctrineConfig   = Config::getODM($config);
+        $databaseConfig   = Config::getDB($config);
+        $connectionConfig = Config::createConnectionConfig();
 
-        $connectionConfig = Config::createConnectionConfig($doctrineConfig, $databaseConfig);
-        $type             = array_get($doctrineConfig, 'mapping', self::METADATA_ANNOTATIONS);
+        $type = array_get($doctrineConfig, 'mapping', self::METADATA_ANNOTATIONS);
         // if no paths are set set default ones
         $paths             = array_get($doctrineConfig, 'paths', [base_path('app/Entities')]);
         $debug             = $config['app.debug'];
@@ -112,7 +115,6 @@ class DoctrineServiceProvider extends ServiceProvider
 
         return $documentManager;
     }
-    
 
     /**
      * Creates the metadata configuration instance.
@@ -148,7 +150,6 @@ class DoctrineServiceProvider extends ServiceProvider
         }
     }
 
-
     /**
      * Configures the metadata configuration instance.
      *
@@ -180,7 +181,7 @@ class DoctrineServiceProvider extends ServiceProvider
             }
         }
 
-        if (!empty($doctrineConfig['repository'])) {
+        if ( ! empty($doctrineConfig['repository'])) {
             $configuration->setDefaultRepositoryClassName($doctrineConfig['repository']);
         }
 
@@ -193,12 +194,11 @@ class DoctrineServiceProvider extends ServiceProvider
                 $configuration->setHydratorNamespace($hydratorNamespace);
             }
         }
-        if (!empty($databaseConfig['connections'][$databaseConfig['default']]['database'])) {
+        if ( ! empty($databaseConfig['connections'][$databaseConfig['default']]['database'])) {
             $configuration->setDefaultDB($databaseConfig['connections'][$databaseConfig['default']]['database']);
         }
 
     }
-
 
     /**
      * Configures the Doctrine event manager instance.
@@ -215,7 +215,6 @@ class DoctrineServiceProvider extends ServiceProvider
         }
     }
 
-
     /**
      * Configures the Doctrine entity manager instance.
      *
@@ -226,7 +225,7 @@ class DoctrineServiceProvider extends ServiceProvider
     {
         if (isset($doctrineConfig['filters'])) {
             foreach ($doctrineConfig['filters'] as $name => $filter) {
-                if (!array_get($filter, 'enabled', false)) {
+                if ( ! array_get($filter, 'enabled', false)) {
                     continue;
                 }
                 $documentManager->getFilterCollection()->enable($name);
