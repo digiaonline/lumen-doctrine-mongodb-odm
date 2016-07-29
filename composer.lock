@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a31f27cd1d582f923adea098f6c24bd9",
-    "content-hash": "5299f336ffd379d9fd962b77bb83cbcd",
+    "hash": "32b3e8906b1e746cfe7cc659c20c8135",
+    "content-hash": "10dbd83ee7d728ba8691ad833beb3208",
     "packages": [
         {
             "name": "crisu83/shortid",
@@ -579,16 +579,16 @@
         },
         {
             "name": "doctrine/mongodb-odm",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb-odm.git",
-                "reference": "1137922032d098a2e284575f2ce30e83abbecea2"
+                "reference": "9eedb38286805f8f084c9a530ef89379ed9bf4b5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/1137922032d098a2e284575f2ce30e83abbecea2",
-                "reference": "1137922032d098a2e284575f2ce30e83abbecea2",
+                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/9eedb38286805f8f084c9a530ef89379ed9bf4b5",
+                "reference": "9eedb38286805f8f084c9a530ef89379ed9bf4b5",
                 "shasum": ""
             },
             "require": {
@@ -607,6 +607,7 @@
                 "symfony/yaml": "~2.3|~3.0"
             },
             "suggest": {
+                "alcaeus/mongo-php-adapter": "Allows usage of PHP 7",
                 "symfony/yaml": "Enables the YAML metadata mapping driver"
             },
             "type": "library",
@@ -658,7 +659,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2016-06-09 14:21:30"
+            "time": "2016-07-27 13:16:06"
         },
         {
             "name": "ircmaxell/random-lib",

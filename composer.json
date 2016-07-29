@@ -9,8 +9,7 @@
     }
   ],
   "require": {
-    "doctrine/mongodb": "^1.2",
-    "doctrine/mongodb-odm": "^1.0",
+    "doctrine/mongodb-odm": "^1.1",
     "crisu83/shortid": "^1.0"
   },
   "autoload": {
