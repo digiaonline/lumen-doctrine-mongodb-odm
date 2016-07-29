@@ -3,14 +3,14 @@
 namespace Nord\Lumen\Doctrine\ODM\MongoDB\Infrastructure\Types;
 
 use Doctrine\ODM\MongoDB\Types\Type;
-use Nord\Lumen\Doctrine\ODM\MongoDB\Domain\Model\ShortId;
+use Nord\Lumen\Doctrine\ODM\MongoDB\Domain\Model\DomainId;
 
 /**
  * Class DomainIdType.
  *
  * @package Nord\Lumen\Doctrine\ODM\MongoDB\Infrastructure\Types
  */
-class ShortIdType extends Type
+class DomainIdType extends Type
 {
 
     /**
@@ -18,7 +18,7 @@ class ShortIdType extends Type
      */
     public function convertToDatabaseValue($value)
     {
-        return $value instanceof ShortId ? $value->getValue() : $value;
+        return $value instanceof DomainId ? $value->getValue() : $value;
     }
 
     /**
@@ -26,7 +26,7 @@ class ShortIdType extends Type
      */
     public function convertToPHPValue($value)
     {
-        return new ShortId($value);
+        return new DomainId($value);
     }
 
     /**
@@ -34,7 +34,7 @@ class ShortIdType extends Type
      */
     public function closureToMongo()
     {
-        return '$return = new \Nord\Lumen\Doctrine\ODM\MongoDB\Domain\Model\ShortId($value);';
+        return '$return = new \Nord\Lumen\Doctrine\ODM\MongoDB\Domain\Model\DomainId($value);';
     }
 
     /**
@@ -42,7 +42,7 @@ class ShortIdType extends Type
      */
     public function closureToPHP()
     {
-        return '$return = new \Nord\Lumen\Doctrine\ODM\MongoDB\Domain\Model\ShortId($value);';
+        return '$return = new \Nord\Lumen\Doctrine\ODM\MongoDB\Domain\Model\DomainId($value);';
     }
 
 }

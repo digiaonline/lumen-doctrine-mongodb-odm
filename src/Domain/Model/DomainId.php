@@ -2,14 +2,14 @@
 
 namespace Nord\Lumen\Doctrine\ODM\MongoDB\Domain\Model;
 
-use Crisu83\ShortId\ShortId as BaseShortId;
+use Crisu83\ShortId\ShortId;
 
 /**
- * Class ShortId.
+ * Class DomainId.
  *
- * @package Nord\Lumen\Doctrine\ODM\MongoDB\Domain\Model
+ * @package Nord\Lumen\Core\Domain
  */
-class ShortId
+class DomainId
 {
 
     /**
@@ -38,7 +38,7 @@ class ShortId
     private static function nextIdentity()
     {
         if (self::$identityGenerator === null) {
-            self::$identityGenerator = BaseShortId::create();
+            self::$identityGenerator = ShortId::create();
         }
 
         return self::$identityGenerator->generate();
