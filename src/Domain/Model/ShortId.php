@@ -1,7 +1,14 @@
-<?php namespace Nord\Lumen\Doctrine\ODM\MongoDB\Domain\Model;
+<?php
 
-use Crisu83\ShortId\ShortId as Crisu83ShortId;
+namespace Nord\Lumen\Doctrine\ODM\MongoDB\Domain\Model;
 
+use Crisu83\ShortId\ShortId as BaseShortId;
+
+/**
+ * Class ShortId.
+ *
+ * @package Nord\Lumen\Doctrine\ODM\MongoDB\Domain\Model
+ */
 class ShortId
 {
 
@@ -15,9 +22,8 @@ class ShortId
      */
     private static $identityGenerator;
 
-
     /**
-     * ObjectId constructor.
+     * DomainId constructor.
      *
      * @param string $value
      */
@@ -26,19 +32,17 @@ class ShortId
         $this->value = $value === null ? $this->nextIdentity() : $value;
     }
 
-
     /**
      * @return string
      */
     private static function nextIdentity()
     {
         if (self::$identityGenerator === null) {
-            self::$identityGenerator = Crisu83ShortId::create();
+            self::$identityGenerator = BaseShortId::create();
         }
 
         return self::$identityGenerator->generate();
     }
-
 
     /**
      * @return string
@@ -46,5 +50,13 @@ class ShortId
     public function getValue()
     {
         return $this->value;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getValue();
     }
 }
