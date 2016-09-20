@@ -25,7 +25,6 @@ use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\ClassLoader;
 use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver;
 
@@ -77,8 +76,9 @@ class Setup
         Cache $cache = null
     ) {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver($paths));
-        AnnotationDriver::registerAnnotationClasses();
+        $driver = $config->newDefaultAnnotationDriver($paths);
+        $config->setMetadataDriverImpl($driver);
+        $driver->registerAnnotationClasses();
 
         return $config;
     }
