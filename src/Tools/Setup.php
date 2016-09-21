@@ -76,7 +76,9 @@ class Setup
         Cache $cache = null
     ) {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver($paths));
+        $driver = $config->newDefaultAnnotationDriver($paths);
+        $config->setMetadataDriverImpl($driver);
+        $driver->registerAnnotationClasses();
 
         return $config;
     }
