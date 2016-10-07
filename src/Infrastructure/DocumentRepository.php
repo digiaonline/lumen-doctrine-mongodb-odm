@@ -19,7 +19,7 @@ class DocumentRepository extends BaseRepository
      */
     public function findByDomainId($domainId)
     {
-        return $this->findOneBy(['domainId' => $domainId]);
+        return $this->findOneBy(['domain_id' => $domainId]);
     }
 
     /**
@@ -30,7 +30,7 @@ class DocumentRepository extends BaseRepository
     public function domainIdExists($domainId)
     {
         return (int)$this->createQueryBuilder()
-                         ->field('domainId')
+                         ->field('domain_id')
                          ->equals($domainId)
                          ->getQuery()
                          ->count();
