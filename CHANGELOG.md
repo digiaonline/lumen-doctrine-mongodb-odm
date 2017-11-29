@@ -26,6 +26,10 @@ Don't forget to update the links at the bottom of the CHANGELOG.
 ### Security
 - To invite users to upgrade in case of vulnerabilities.
 
+## [1.5.2] - 2017-11-29
+### Fixed
+- Default configuration merge overwrite. 
+
 ## [1.5.1] - 2017-11-29
 ### Added
 - Missing cache key in default configuration.
@@ -113,7 +117,9 @@ Don't forget to update the links at the bottom of the CHANGELOG.
 ### Added
 - Initial project files.
 
-[Unreleased]: https://github.com/digiaonline/lumen-doctrine-mongodb-odm/compare/1.5.0...HEAD
+[Unreleased]: https://github.com/digiaonline/lumen-doctrine-mongodb-odm/compare/1.5.2...HEAD
+[1.5.2]: https://github.com/digiaonline/lumen-doctrine-mongodb-odm/compare/1.5.1...1.5.2
+[1.5.1]: https://github.com/digiaonline/lumen-doctrine-mongodb-odm/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/digiaonline/lumen-doctrine-mongodb-odm/compare/1.4.0...1.5.0
 [1.4.0]: https://github.com/digiaonline/lumen-doctrine-mongodb-odm/compare/1.3.0...1.4.0
 [1.3.0]: https://github.com/digiaonline/lumen-doctrine-mongodb-odm/compare/1.2.1...1.3.0
