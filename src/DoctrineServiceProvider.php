@@ -1,6 +1,13 @@
 <?php namespace Nord\Lumen\Doctrine\ODM\MongoDB;
 
+use Doctrine\Common\Cache\ApcCache;
+use Doctrine\Common\Cache\ApcuCache;
+use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\Common\Cache\MemcacheCache;
+use Doctrine\Common\Cache\RedisCache;
+use Doctrine\Common\Cache\XcacheCache;
 use Doctrine\Common\EventManager;
 use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\Configuration;
@@ -97,8 +104,9 @@ class DoctrineServiceProvider extends ServiceProvider
         $debug             = $config['app.debug'];
         $proxyDir          = array_get($doctrineConfig, 'proxy.directory');
         $simpleAnnotations = array_get($doctrineConfig, 'simple_annotations', false);
+        $cache             = $this->configureCache($doctrineConfig);
 
-        $metadataConfiguration = $this->createMetadataConfiguration($type, $paths, $debug, $proxyDir, null,
+        $metadataConfiguration = $this->createMetadataConfiguration($type, $paths, $debug, $proxyDir, $cache,
             $simpleAnnotations);
 
         $this->configureMetadataConfiguration($metadataConfiguration, $doctrineConfig, $databaseConfig);
@@ -193,6 +201,9 @@ class DoctrineServiceProvider extends ServiceProvider
                 $hydratorNamespace = $doctrineConfig['hydrator']['namespace'] ? $doctrineConfig['hydrator']['namespace'] : self::HYDRATOR_NAMESPACE;
                 $configuration->setHydratorNamespace($hydratorNamespace);
             }
+            if (isset($doctrineConfig['hydrator']['auto_generate'])) {
+                $configuration->setAutoGenerateHydratorClasses($doctrineConfig['hydrator']['auto_generate']);
+            }
         }
         if ( ! empty($databaseConfig['connections'][$databaseConfig['default']]['database'])) {
             $configuration->setDefaultDB($databaseConfig['connections'][$databaseConfig['default']]['database']);
@@ -242,5 +253,41 @@ class DoctrineServiceProvider extends ServiceProvider
                 }
             }
         }
+    }
+
+    /**
+     * Configure the cache provider.
+     *
+     * @param array $doctrineConfig
+     *
+     * @return CacheProvider
+     */
+    protected function configureCache(array $doctrineConfig)
+    {
+        $enableCache = array_get($doctrineConfig, 'cache.default');
+        $cacheConfig = array_get($doctrineConfig, 'cache.config', []);
+        if ($enableCache === 'apcu' && \extension_loaded('apcu')) {
+            $cache = new ApcuCache();
+        } elseif ($enableCache === 'apcu' && \extension_loaded('apc')) {
+            $cache = new ApcCache();
+        } elseif ($enableCache === 'xcache' && \extension_loaded('xcache')) {
+            $cache = new XcacheCache();
+        } elseif ($enableCache === 'memcache' && \extension_loaded('memcache')) {
+            $memcache = new \Memcache();
+            $host = array_get($cacheConfig, 'host', '127.0.0.1');
+            $memcache->connect($host);
+            $cache = new MemcacheCache();
+            $cache->setMemcache($memcache);
+        } elseif ($enableCache === 'redis' && \extension_loaded('redis')) {
+            $redis = new \Redis();
+            $host = array_get($cacheConfig, 'host', '127.0.0.1');
+            $redis->connect($host);
+            $cache = new RedisCache();
+            $cache->setRedis($redis);
+        } else {
+            $cache = new ArrayCache();
+        }
+
+        return $cache;
     }
 }
