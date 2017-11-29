@@ -196,8 +196,8 @@ class Config
         $realConfig    = $config->get(self::ODM_CONFIG_NAME);
         foreach ($realConfig as $configKey => $configValue) {
             if (isset($defaultConfig[$configKey])) {
-                if (is_array($defaultConfig[$configKey])) {
-                    $defaultConfig[$configKey] += $configValue;
+                if (\is_array($defaultConfig[$configKey])) {
+                    $defaultConfig[$configKey] = array_merge($defaultConfig[$configKey], $configValue);
                 } else {
                     $defaultConfig[$configKey] = $configValue;
                 }
