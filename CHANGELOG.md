@@ -26,6 +26,9 @@ Don't forget to update the links at the bottom of the CHANGELOG.
 ### Security
 - To invite users to upgrade in case of vulnerabilities.
 
+## [1.5.1] - 2017-11-29
+### Added
+- Missing cache key in default configuration.
 
 ## [1.5.0] - 2017-11-29
 ### Added
