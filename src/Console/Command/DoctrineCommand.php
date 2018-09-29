@@ -1,7 +1,6 @@
 <?php
 namespace Nord\Lumen\Doctrine\ODM\MongoDB\Console\Command;
 
-
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Symfony\Component\Console\Command\Command;

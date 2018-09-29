@@ -44,5 +44,4 @@ class DomainIdType extends Type
     {
         return '$return = new \Nord\Lumen\Doctrine\ODM\MongoDB\Domain\Model\DomainId($value);';
     }
-
 }

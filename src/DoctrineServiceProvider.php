@@ -106,15 +106,21 @@ class DoctrineServiceProvider extends ServiceProvider
         $simpleAnnotations = array_get($doctrineConfig, 'simple_annotations', false);
         $cache             = $this->configureCache($doctrineConfig);
 
-        $metadataConfiguration = $this->createMetadataConfiguration($type, $paths, $debug, $proxyDir, $cache,
-            $simpleAnnotations);
+        $metadataConfiguration = $this->createMetadataConfiguration(
+            $type,
+            $paths,
+            $debug,
+            $proxyDir,
+            $cache,
+            $simpleAnnotations
+        );
 
         $this->configureMetadataConfiguration($metadataConfiguration, $doctrineConfig, $databaseConfig);
 
         $eventManager = new EventManager;
 
         $this->configureEventManager($doctrineConfig, $eventManager);
-        $connection = new Connection($connectionConfig['host'], [], $metadataConfiguration);
+        $connection = new Connection($connectionConfig['server'], $connectionConfig['options'], $metadataConfiguration);
 
         $documentManager = DocumentManager::create($connection, $metadataConfiguration, $eventManager);
 
@@ -147,8 +153,13 @@ class DoctrineServiceProvider extends ServiceProvider
     ) {
         switch ($type) {
             case self::METADATA_ANNOTATIONS:
-                return Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache,
-                    $useSimpleAnnotationReader);
+                return Setup::createAnnotationMetadataConfiguration(
+                    $paths,
+                    $isDevMode,
+                    $proxyDir,
+                    $cache,
+                    $useSimpleAnnotationReader
+                );
             case self::METADATA_XML:
                 return Setup::createXMLMetadataConfiguration($paths, $isDevMode, $proxyDir, $cache);
             case self::METADATA_YAML:
@@ -189,7 +200,7 @@ class DoctrineServiceProvider extends ServiceProvider
             }
         }
 
-        if ( ! empty($doctrineConfig['repository'])) {
+        if (! empty($doctrineConfig['repository'])) {
             $configuration->setDefaultRepositoryClassName($doctrineConfig['repository']);
         }
 
@@ -205,10 +216,9 @@ class DoctrineServiceProvider extends ServiceProvider
                 $configuration->setAutoGenerateHydratorClasses($doctrineConfig['hydrator']['auto_generate']);
             }
         }
-        if ( ! empty($databaseConfig['connections'][$databaseConfig['default']]['database'])) {
+        if (! empty($databaseConfig['connections'][$databaseConfig['default']]['database'])) {
             $configuration->setDefaultDB($databaseConfig['connections'][$databaseConfig['default']]['database']);
         }
-
     }
 
     /**
@@ -236,7 +246,7 @@ class DoctrineServiceProvider extends ServiceProvider
     {
         if (isset($doctrineConfig['filters'])) {
             foreach ($doctrineConfig['filters'] as $name => $filter) {
-                if ( ! array_get($filter, 'enabled', false)) {
+                if (! array_get($filter, 'enabled', false)) {
                     continue;
                 }
                 $documentManager->getFilterCollection()->enable($name);
@@ -246,7 +256,7 @@ class DoctrineServiceProvider extends ServiceProvider
         // @see http://doctrine-mongodb-odm.readthedocs.org/en/latest/reference/basic-mapping.html#custom-mapping-types
         if (isset($doctrineConfig['types'])) {
             foreach ($doctrineConfig['types'] as $name => $className) {
-                if ( ! Type::hasType($name)) {
+                if (! Type::hasType($name)) {
                     Type::addType($name, $className);
                 } else {
                     Type::overrideType($name, $className);

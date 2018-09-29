@@ -46,11 +46,15 @@ class GenerateRepositoriesCommand extends DoctrineCommand
         ->setDescription('Generate repository classes from your mapping information.')
         ->setDefinition(array(
             new InputOption(
-                'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                'filter',
+                null,
+                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'A string pattern used to match documents that should be processed.'
             ),
             new InputArgument(
-                'dest-path', InputArgument::REQUIRED, 'The path to generate your repository classes.'
+                'dest-path',
+                InputArgument::REQUIRED,
+                'The path to generate your repository classes.'
             )
         ))
         ->setHelp(<<<EOT
@@ -72,11 +76,11 @@ EOT
         // Process destination directory
         $destPath = realpath($input->getArgument('dest-path'));
 
-        if ( ! file_exists($destPath)) {
+        if (! file_exists($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Documents destination directory '<info>%s</info>' does not exist.", $destPath)
             );
-        } elseif ( ! is_writable($destPath)) {
+        } elseif (! is_writable($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Documents destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );
