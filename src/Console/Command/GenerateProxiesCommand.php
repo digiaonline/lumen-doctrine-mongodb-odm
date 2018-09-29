@@ -45,14 +45,11 @@ class GenerateProxiesCommand extends DoctrineCommand
         ->setDescription('Generates proxy classes for document classes.')
         ->setDefinition(array(
             new InputOption(
-                'filter',
-                null,
-                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'A string pattern used to match documents that should be processed.'
             ),
             new InputArgument(
-                'dest-path',
-                InputArgument::OPTIONAL,
+                'dest-path', InputArgument::OPTIONAL,
                 'The path to generate your proxy classes. If none is provided, it will attempt to grab from configuration.'
             ),
         ))
@@ -77,17 +74,17 @@ EOT
             $destPath = $dm->getConfiguration()->getProxyDir();
         }
 
-        if (! is_dir($destPath)) {
+        if ( ! is_dir($destPath)) {
             mkdir($destPath, 0777, true);
         }
 
         $destPath = realpath($destPath);
 
-        if (! file_exists($destPath)) {
+        if ( ! file_exists($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Proxies destination directory '<info>%s</info>' does not exist.", $destPath)
             );
-        } elseif (! is_writable($destPath)) {
+        } elseif ( ! is_writable($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Proxies destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );

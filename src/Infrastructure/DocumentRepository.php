@@ -35,4 +35,5 @@ class DocumentRepository extends BaseRepository
                          ->getQuery()
                          ->count();
     }
+
 }

@@ -46,7 +46,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
     /**
      * @var array
      */
-    private $filter = array();
+    private $_filter = array();
 
     /**
      * @param \ArrayIterator $metadata
@@ -54,7 +54,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
      */
     public function __construct(\ArrayIterator $metadata, $filter)
     {
-        $this->filter = (array) $filter;
+        $this->_filter = (array) $filter;
         parent::__construct($metadata);
     }
 
@@ -63,14 +63,14 @@ class MetadataFilter extends \FilterIterator implements \Countable
      */
     public function accept()
     {
-        if (count($this->filter) == 0) {
+        if (count($this->_filter) == 0) {
             return true;
         }
 
         $it = $this->getInnerIterator();
         $metadata = $it->current();
 
-        foreach ($this->filter as $filter) {
+        foreach ($this->_filter AS $filter) {
             if (strpos($metadata->name, $filter) !== false) {
                 return true;
             }

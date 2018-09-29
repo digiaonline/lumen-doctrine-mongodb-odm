@@ -47,56 +47,35 @@ class GenerateDocumentsCommand extends DoctrineCommand
         ->setDescription('Generate document classes and method stubs from your mapping information.')
         ->setDefinition(array(
             new InputOption(
-                'filter',
-                null,
-                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'A string pattern used to match documents that should be processed.'
             ),
             new InputArgument(
-                'dest-path',
-                InputArgument::REQUIRED,
-                'The path to generate your document classes.'
+                'dest-path', InputArgument::REQUIRED, 'The path to generate your document classes.'
             ),
             new InputOption(
-                'generate-annotations',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'Flag to define if the generator should generate annotation metadata on documents.',
-                false
+                'generate-annotations', null, InputOption::VALUE_OPTIONAL,
+                'Flag to define if the generator should generate annotation metadata on documents.', false
             ),
             new InputOption(
-                'generate-methods',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'Flag to define if the generator should generate stub methods on documents.',
-                true
+                'generate-methods', null, InputOption::VALUE_OPTIONAL,
+                'Flag to define if the generator should generate stub methods on documents.', true
             ),
             new InputOption(
-                'regenerate-documents',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'Flag to define if the generator should regenerate a document if it exists.',
-                false
+                'regenerate-documents', null, InputOption::VALUE_OPTIONAL,
+                'Flag to define if the generator should regenerate a document if it exists.', false
             ),
             new InputOption(
-                'update-documents',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'Flag to define if the generator should only update a document if it exists.',
-                true
+                'update-documents', null, InputOption::VALUE_OPTIONAL,
+                'Flag to define if the generator should only update a document if it exists.', true
             ),
             new InputOption(
-                'extend',
-                null,
-                InputOption::VALUE_OPTIONAL,
+                'extend', null, InputOption::VALUE_OPTIONAL,
                 'Defines a base class to be extended by generated document classes.'
             ),
             new InputOption(
-                'num-spaces',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'Defines the number of indentation spaces.',
-                4
+                'num-spaces', null, InputOption::VALUE_OPTIONAL,
+                'Defines the number of indentation spaces.', 4
             )
         ))
         ->setHelp(<<<EOT
@@ -138,11 +117,11 @@ EOT
         // Process destination directory
         $destPath = realpath($input->getArgument('dest-path'));
 
-        if (! file_exists($destPath)) {
+        if ( ! file_exists($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Documents destination directory '<info>%s</info>' does not exist.", $destPath)
             );
-        } elseif (! is_writable($destPath)) {
+        } elseif ( ! is_writable($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Documents destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );

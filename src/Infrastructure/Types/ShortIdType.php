@@ -44,4 +44,5 @@ class ShortIdType extends Type
     {
         return '$return = new \Nord\Lumen\Doctrine\ODM\MongoDB\Domain\Model\ShortId($value);';
     }
+
 }
