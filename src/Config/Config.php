@@ -176,11 +176,11 @@ class Config
      */
     public static function check(ConfigRepository $config)
     {
-        if ( ! isset($config[self::ODM_CONFIG_NAME])) {
+        if (! isset($config[self::ODM_CONFIG_NAME])) {
             throw new Exception('Doctrine ODM configuration not registered.');
         }
 
-        if ( ! isset($config[self::ODM_DB_CONFIG_NAME])) {
+        if (! isset($config[self::ODM_DB_CONFIG_NAME])) {
             throw new Exception('Database configuration not registered.');
         }
     }
@@ -238,12 +238,18 @@ class Config
         $config   = self::$liveConfig->get(self::ODM_DB_CONFIG_NAME);
         $dbConfig = $config['connections'][$config['default']];
 
+        $server  = $dbConfig['host'] . ':' . $dbConfig['port'] ?? self::DEFAULT_MONGODB_PORT;
+        $options = array_merge(
+            [
+            'username' => $dbConfig['username'],
+            'password' => $dbConfig['password']
+            ],
+            $dbConfig['options'] ?? []
+        );
+
         return [
-            'host'     => $dbConfig['host'],
-            'port'     => ! empty($dbConfig['port']) ? $dbConfig['port'] : self::DEFAULT_MONGODB_PORT,
-            'user'     => $dbConfig['username'],
-            'password' => $dbConfig['password'],
+            'server'  => $server,
+            'options' => $options
         ];
     }
 }
-
